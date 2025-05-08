@@ -62,78 +62,130 @@ lib/
      - Cloud Firestore
      - Realtime Database
 
-2. **Regras do Firestore**
-   ```javascript
-   rules_version = '2';
-   service cloud.firestore {
-     match /databases/{database}/documents {
-       match /{document=**} {
-         allow read, write: if request.auth != null;
-       }
-     }
-   }
-   ```
 
-3. **Regras do Realtime Database**
-   ```json
-   {
-     "rules": {
-       ".read": "auth != null",
-       ".write": "auth != null"
-     }
-   }
-   ```
+## 📱 Funcionamento do Aplicativo
 
-## 📱 Componentes Principais
+O TimeCare é um aplicativo de gerenciamento de tempo que permite aos usuários organizar suas tarefas e compromissos de forma eficiente. O aplicativo oferece as seguintes funcionalidades principais:
 
-O aplicativo está estruturado com os seguintes componentes principais:
+### 1. Sistema de Autenticação
+- Login com email e senha
+- Registro de novos usuários
+- Recuperação de senha
+- Persistência de sessão
+
+### 2. Dashboard Principal
+- Visão geral das tarefas do dia
+- Calendário de compromissos
+- Estatísticas de produtividade
+- Filtros por categoria e status
+
+### 3. Gerenciamento de Tarefas
+- Criação de tarefas com:
+  - Título
+  - Descrição
+  - Data de vencimento
+  - Prioridade
+  - Categoria
+  - Lembretes
+- Edição e exclusão de tarefas
+- Marcação de conclusão
+- Arrastar e soltar para reorganizar
+
+### 4. Sincronização em Tempo Real
+- Atualização automática entre dispositivos
+- Backup automático no Firebase
+- Resolução de conflitos offline/online
+
+## 💻 Estrutura do Código
+
+O projeto segue uma arquitetura limpa e organizada, dividida em camadas:
+
+### 1. Camada de Apresentação (UI)
+- **Screens**: Telas principais do aplicativo
+  - `LoginScreen`: Autenticação de usuários
+  - `HomeScreen`: Dashboard principal
+  - `TaskScreen`: Gerenciamento de tarefas
+  - `ProfileScreen`: Configurações do usuário
+
+- **Widgets**: Componentes reutilizáveis
+  - `TaskCard`: Card de exibição de tarefa
+  - `CustomButton`: Botões personalizados
+  - `LoadingIndicator`: Indicadores de carregamento
+  - `ErrorWidget`: Tratamento de erros
+
+### 2. Camada de Lógica de Negócios
+- **Controllers**: Gerenciamento de estado
+  - `AuthController`: Lógica de autenticação
+  - `TaskController`: Gerenciamento de tarefas
+  - `UserController`: Dados do usuário
+
+- **Services**: Serviços de integração
+  - `FirebaseService`: Integração com Firebase
+  - `NotificationService`: Gerenciamento de notificações
+  - `StorageService`: Armazenamento local
+
+### 3. Camada de Dados
+- **Models**: Classes de dados
+  - `User`: Modelo de usuário
+  - `Task`: Modelo de tarefa
+  - `Category`: Modelo de categoria
+
+- **Repositories**: Acesso a dados
+  - `UserRepository`: Operações de usuário
+  - `TaskRepository`: Operações de tarefas
+  - `CategoryRepository`: Operações de categorias
+
+### 4. Utilitários
+- **Helpers**: Funções auxiliares
+  - `DateUtils`: Manipulação de datas
+  - `ValidationUtils`: Validação de dados
+  - `ThemeUtils`: Configurações de tema
+
+- **Constants**: Constantes do aplicativo
+  - `AppConstants`: Configurações gerais
+  - `FirebaseConstants`: Configurações do Firebase
+  - `RouteConstants`: Rotas da aplicação
+
+## 🔄 Fluxo de Dados
 
 1. **Autenticação**
-   - Login/Registro de usuários
-   - Gerenciamento de sessão
+   ```
+   Usuário -> UI (LoginScreen) -> AuthController -> FirebaseService -> Firebase
+   ```
 
-2. **Gerenciamento de Tarefas**
-   - Criação de tarefas
-   - Edição de tarefas
-   - Exclusão de tarefas
-   - Marcação de conclusão
+2. **Criação de Tarefa**
+   ```
+   Usuário -> UI (TaskScreen) -> TaskController -> TaskRepository -> FirebaseService -> Firebase
+   ```
 
 3. **Sincronização**
-   - Sincronização em tempo real com Firebase
-   - Backup automático de dados
+   ```
+   Firebase -> FirebaseService -> TaskRepository -> TaskController -> UI (HomeScreen)
+   ```
 
-## 🔐 Variáveis de Ambiente
+## 🎨 Design System
 
-Para desenvolvimento local, crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+O aplicativo utiliza um design system consistente com:
 
-```
-FIREBASE_API_KEY=sua_api_key
-FIREBASE_PROJECT_ID=seu_project_id
-FIREBASE_MESSAGING_SENDER_ID=seu_sender_id
-FIREBASE_APP_ID=seu_app_id
-```
+- **Cores**
+  - Primária: #2196F3 (Azul)
+  - Secundária: #FFC107 (Amarelo)
+  - Sucesso: #4CAF50 (Verde)
+  - Erro: #F44336 (Vermelho)
+  - Neutro: #9E9E9E (Cinza)
 
-## 🧪 Testes
+- **Tipografia**
+  - Títulos: Roboto Bold
+  - Corpo: Roboto Regular
+  - Botões: Roboto Medium
 
-Para executar os testes:
+- **Componentes**
+  - Cards com sombra suave
+  - Botões com feedback tátil
+  - Inputs com validação visual
+  - Animações suaves
 
-```bash
-flutter test
-```
 
-## 📦 Build
-
-Para gerar o APK:
-
-```bash
-flutter build apk --release
-```
-
-Para gerar o IPA (iOS):
-
-```bash
-flutter build ios --release
-```
 
 ## 🤝 Contribuição
 
@@ -143,10 +195,5 @@ flutter build ios --release
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
-## 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-## 📞 Suporte
-
-Para suporte, envie um email para [seu-email@dominio.com] ou abra uma issue no repositório.
