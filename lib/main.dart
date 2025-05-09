@@ -4,6 +4,7 @@ import 'package:timecare/firebase_options.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:timecare/test_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,8 +42,59 @@ class MyApp extends StatelessWidget {
           foregroundColor: CupertinoColors.label,
         ),
       ),
-      home: const MedicineRemindersScreen(),
+      home: const MainScreen(),
       debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = [
+    const MedicineRemindersScreen(),
+    const TestScreen(),
+    const Center(
+      child: Text(
+        'Perfil',
+        style: TextStyle(fontSize: 24),
+      ),
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _screens[_selectedIndex],
+      bottomNavigationBar: CupertinoTabBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.heart_fill),
+            label: 'Remédios',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.checkmark_circle_fill),
+            label: 'Teste',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.person_fill),
+            label: 'Perfil',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -418,13 +470,20 @@ class _MedicineRemindersScreenState extends State<MedicineRemindersScreen> {
           final medicinesList = medicinesMap.entries.map((entry) {
             return {
               'key': entry.key,
-              'name': entry.value['name'],
-              'time': entry.value['time'],
-              'bit': entry.value['bit'],
+              'name': entry.value['name'] ?? '',
+              'time': entry.value['time'] ?? '',
+              'bit': entry.value['bit'] ?? false,
             };
           }).toList();
 
-          medicinesList.sort((a, b) => a['time'].compareTo(b['time']));
+          medicinesList.sort((a, b) {
+            final timeA = a['time'] as String;
+            final timeB = b['time'] as String;
+            if (timeA.isEmpty && timeB.isEmpty) return 0;
+            if (timeA.isEmpty) return 1;
+            if (timeB.isEmpty) return -1;
+            return timeA.compareTo(timeB);
+          });
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
@@ -567,6 +626,48 @@ class _MedicineRemindersScreenState extends State<MedicineRemindersScreen> {
             },
           );
         },
+      ),
+    );
+  }
+}
+
+class TestScreen extends StatelessWidget {
+  const TestScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: CupertinoColors.systemGroupedBackground,
+      appBar: AppBar(
+        title: const Text('Tela de Teste'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              CupertinoIcons.checkmark_circle_fill,
+              size: 64,
+              color: CupertinoColors.systemGreen,
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Tela de Teste',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Esta é uma tela de teste para o hotbar',
+              style: TextStyle(
+                fontSize: 16,
+                color: CupertinoColors.systemGrey,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
